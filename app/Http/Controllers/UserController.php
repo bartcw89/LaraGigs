@@ -12,12 +12,12 @@ use Illuminate\Contracts\View\Factory;
 
 class UserController extends Controller
 {
-    public function create(): View|Factory
+    public function goToRegisterPage(): View|Factory
     {
         return view('users.register');
     }
 
-    public function save(Request $request): Redirector|RedirectResponse 
+    public function createUser(Request $request): Redirector|RedirectResponse 
     {
         $formFields = $request->validate([
             'name' => ['required', 'min:3'],
@@ -38,12 +38,12 @@ class UserController extends Controller
         return redirect('/')->with('message', 'You have been logged out!');
     }
 
-    public function login(): View|Factory 
+    public function goToLoginPage(): View|Factory 
     {
         return view('users.login');
     }
 
-    public function authenticate(Request $request): Redirector|RedirectResponse 
+    public function authenticateUser(Request $request): Redirector|RedirectResponse 
     {
         $formFields = $request->validate([
             'email' => ['required', 'email'],

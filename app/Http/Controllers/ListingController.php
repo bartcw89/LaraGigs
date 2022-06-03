@@ -12,22 +12,22 @@ use Illuminate\Http\RedirectResponse;
 
 class ListingController extends Controller
 {
-    public function showAll(): View|Factory 
+    public function showAllListings(): View|Factory 
     {
         return view('listings.index', ['listings' => Listing::latest()->filter(request(['tag', 'search']))->paginate(6)]);
     }
 
-    public function showSingle(Listing $listing): View|Factory 
+    public function showSingleListing(Listing $listing): View|Factory 
     {
         return view('listings.show', ['listing' => $listing]);
     }
 
-    public function create(): View|Factory 
+    public function goToCreateListingPage(): View|Factory 
     {
         return view('listings.create');
     }
 
-    public function save(Request $request): Redirector|RedirectResponse 
+    public function createListing(Request $request): Redirector|RedirectResponse 
     {
         $formFields = $request->validate([
             'title' => 'required',
@@ -46,12 +46,12 @@ class ListingController extends Controller
         return redirect('/')->with('message', 'Listing created successfully!');
     }
 
-    public function edit(Listing $listing): View|Factory 
+    public function goToEditListingPage(Listing $listing): View|Factory 
     {
         return view('listings.edit', ['listing' => $listing]);
     }
 
-    public function update(Request $request, Listing $listing): RedirectResponse 
+    public function editListing(Request $request, Listing $listing): RedirectResponse 
     {
         $this->checkAuthorization($listing->user_id);
         $formFields = $request->validate([
@@ -70,14 +70,14 @@ class ListingController extends Controller
         return back()->with('message', 'Listing updated successfully!');
     }
 
-    public function delete(Listing $listing): Redirector|RedirectResponse 
+    public function deleteListing(Listing $listing): Redirector|RedirectResponse 
     {
         $this->checkAuthorization($listing->user_id);
         $listing->delete();
         return redirect('/')->with('message', 'Listing deleted successfully!');
     }
 
-    public function manage(): View|Factory 
+    public function goToManageListingsPage(): View|Factory 
     {
         return view('listings.manage', ['listings' => auth()->user()->listings]);
     }

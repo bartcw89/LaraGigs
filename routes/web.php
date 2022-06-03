@@ -15,17 +15,17 @@ use App\Http\Controllers\ListingController;
 |
 */
 
-Route::get('/', [ListingController::class, 'showAll']);
-Route::get('/listings/create', [ListingController::class, 'create'])->middleware('auth');
-Route::post('/listings', [ListingController::class, 'save'])->middleware('auth');
-Route::get('/listings/{listing}/edit', [ListingController::class, 'edit'])->middleware('auth');
-Route::put('/listings/{listing}', [ListingController::class, 'update'])->middleware('auth');
-Route::delete('/listings/{listing}', [ListingController::class, 'delete'])->middleware('auth');
-Route::get('/listings/manage', [ListingController::class, 'manage'])-> middleware('auth');
-Route::get('/listings/{listing}', [ListingController::class, 'showSingle']);
+Route::get('/', [ListingController::class, 'showAllListings']);
+Route::get('/listings/create', [ListingController::class, 'goToCreateListingPage'])->middleware('auth');
+Route::post('/listings', [ListingController::class, 'createListing'])->middleware('auth');
+Route::get('/listings/{listing}/edit', [ListingController::class, 'goToEditListingPage'])->middleware('auth');
+Route::put('/listings/{listing}', [ListingController::class, 'editListing'])->middleware('auth');
+Route::delete('/listings/{listing}', [ListingController::class, 'deleteListing'])->middleware('auth');
+Route::get('/listings/manage', [ListingController::class, 'goToManageListingsPage'])-> middleware('auth');
+Route::get('/listings/{listing}', [ListingController::class, 'showSingleListing']);
 
-Route::get('/register', [UserController::class, 'create'])->middleware('guest');
-Route::post('/users', [UserController::class, 'save']);
+Route::get('/register', [UserController::class, 'goToRegisterPage'])->middleware('guest');
+Route::post('/users', [UserController::class, 'createUser']);
 Route::post('/logout', [UserController::class, 'logout'])->middleware('auth');
-Route::get('/login', [UserController::class, 'login'])->name('login')->middleware('guest');
-Route::post('/users/authenticate', [UserController::class, 'authenticate']);
+Route::get('/login', [UserController::class, 'goToLoginPage'])->name('login')->middleware('guest');
+Route::post('/users/authenticate', [UserController::class, 'authenticateUser']);
