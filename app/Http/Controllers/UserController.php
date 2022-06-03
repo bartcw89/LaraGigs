@@ -5,16 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Routing\Redirector;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\View\Factory;
 
 class UserController extends Controller
 {
-    // Show register/create form
-    public function create() {
+    public function create(): View|Factory
+    {
         return view('users.register');
     }
 
-    // Store new user
-    public function store(Request $request) {
+    public function save(Request $request): Redirector|RedirectResponse 
+    {
         $formFields = $request->validate([
             'name' => ['required', 'min:3'],
             'email' => ['required', 'email', Rule::unique('users', 'email')],
@@ -26,20 +30,21 @@ class UserController extends Controller
         return redirect('/')->with('message', 'User created and logged in');
     }
 
-    // Logout user
-    public function logout(Request $request) {
+    public function logout(Request $request): Redirector|RedirectResponse 
+    {
         auth()->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/')->with('message', 'You have been logged out!');
     }
 
-    // Show login form
-    public function login() {
+    public function login(): View|Factory 
+    {
         return view('users.login');
     }
 
-    public function authenticate(Request $request) {
+    public function authenticate(Request $request): Redirector|RedirectResponse 
+    {
         $formFields = $request->validate([
             'email' => ['required', 'email'],
             'password' => 'required'

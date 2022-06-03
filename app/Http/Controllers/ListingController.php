@@ -5,30 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\Listing;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Routing\Redirector;
+use Illuminate\Contracts\View\View;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 
 class ListingController extends Controller
 {
-    // Show all listings
-    public function index() {
-        return view('listings.index', [
-            'listings' => Listing::latest()->filter(request(['tag', 'search']))->paginate(6)
-        ]);
+    public function showAll(): View|Factory 
+    {
+        return view('listings.index', ['listings' => Listing::latest()->filter(request(['tag', 'search']))->paginate(6)]);
     }
 
-    // Show single listing
-    public function show(Listing $listing) {
-        return view('listings.show', [
-            'listing' => $listing
-        ]);
+    public function showSingle(Listing $listing): View|Factory 
+    {
+        return view('listings.show', ['listing' => $listing]);
     }
 
-    // Show create form
-    public function create() {
+    public function create(): View|Factory 
+    {
         return view('listings.create');
     }
 
-    // Store listing data
-    public function store(Request $request) {
+    public function save(Request $request): Redirector|RedirectResponse 
+    {
         $formFields = $request->validate([
             'title' => 'required',
             'company' => ['required', Rule::unique('listings', 'company')],
@@ -46,16 +46,14 @@ class ListingController extends Controller
         return redirect('/')->with('message', 'Listing created successfully!');
     }
 
-    // Show edit form
-    public function edit(Listing $listing) {
+    public function edit(Listing $listing): View|Factory 
+    {
         return view('listings.edit', ['listing' => $listing]);
     }
 
-    // Update listing data
-    public function update(Request $request, Listing $listing) {
-        if ($listing->user_id != auth()->id()) {
-            abort(403, 'Unauthorized action');
-        }
+    public function update(Request $request, Listing $listing): RedirectResponse 
+    {
+        $this->checkAuthorization($listing->user_id);
         $formFields = $request->validate([
             'title' => 'required',
             'company' => 'required',
@@ -72,17 +70,22 @@ class ListingController extends Controller
         return back()->with('message', 'Listing updated successfully!');
     }
 
-    // Delete listing
-    public function destroy(Listing $listing) {
-        if ($listing->user_id != auth()->id()) {
-            abort(403, 'Unauthorized action');
-        }
+    public function delete(Listing $listing): Redirector|RedirectResponse 
+    {
+        $this->checkAuthorization($listing->user_id);
         $listing->delete();
         return redirect('/')->with('message', 'Listing deleted successfully!');
     }
 
-    //Manage listings
-    public function manage() {
+    public function manage(): View|Factory 
+    {
         return view('listings.manage', ['listings' => auth()->user()->listings]);
+    }
+
+    private function checkAuthorization(int $user_id): void
+    {
+        if ($user_id != auth()->id()) {
+            abort(403, 'Unauthorized action');
+        }
     }
 }
